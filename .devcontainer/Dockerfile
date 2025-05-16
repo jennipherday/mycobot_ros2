@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 althack/ros2:galactic-full
+FROM docker.io/althack/ros2:galactic-full
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
