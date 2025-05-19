@@ -54,7 +54,7 @@ mv ~/colcon_ws/src/mycobot_ros2 ~/original_source_backup
 exit
 # Copy the source from the host machine to the RPi.
 # From inside the dev container:
-scp -r $(pwd) er@169.254.100.2:~/colcon_ws/src/mycobot_ros2
+scp -r $(pwd) er@169.254.100.2:~/colcon_ws/src/
 # Now head back into the RPi and build the package (eta 2 min).
 ssh er@169.254.100.2
 cd ~/colcon_ws
