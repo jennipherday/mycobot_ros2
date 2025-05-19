@@ -16,6 +16,15 @@ RUN apt-get update \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Python dependencies
+RUN python3 -m pip install --no-cache-dir \
+    numpy \
+    opencv-python \
+    opencv-python-headless \
+    ipykernel \ 
+    pymycobot
+
+
 ENV DEBIAN_FRONTEND=dialog
 
 # Set up auto-source of workspace for ros user
