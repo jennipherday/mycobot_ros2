@@ -20,8 +20,11 @@ class MyCobotGui(Node):
             JointState, "/joint_states", self.joint_state_cb, 10
         )
 
+        self.gripper_pub = self.create_publisher(
+            JointTrajectory, "/gripper_trajectory", 10
+        )
+
     def setup_gui(self):
-        # layout same as your original, simplified
         self.frm = tk.Frame(self.win)
         self.frm.pack()
         self.entries = []
@@ -32,6 +35,7 @@ class MyCobotGui(Node):
             var = tk.StringVar()
             ent = tk.Entry(self.frm, textvariable=var)
             ent.grid(row=i, column=1)
+            var.set("0.0")  # Default value
             self.joint_vars.append(var)
             self.entries.append(ent)
 
@@ -40,7 +44,22 @@ class MyCobotGui(Node):
             label.grid(row=i, column=2)
 
         tk.Button(self.frm, text="Set Joints", command=self.send_joint_command).grid(
-            row=6, column=0, columnspan=2
+            row=6, column=0, columnspan=3
+        )
+
+        # Gripper controls
+
+        tk.Label(self.frm, text="Gripper Value").grid(row=8, column=0)
+        self.gripper_var = tk.StringVar()
+        tk.Entry(self.frm, textvariable=self.gripper_var).grid(row=8, column=1)
+        tk.Button(self.frm, text="Open Gripper", command=self.send_gripper_open).grid(
+            row=9, column=0
+        )
+        tk.Button(self.frm, text="Close Gripper", command=self.send_gripper_close).grid(
+            row=9, column=1
+        )
+        tk.Button(self.frm, text="Set Gripper", command=self.set_gripper_value).grid(
+            row=8, column=2
         )
 
     def joint_state_cb(self, msg):
@@ -66,6 +85,40 @@ class MyCobotGui(Node):
             self.joint_pub.publish(msg)
         except ValueError:
             self.get_logger().warn("Invalid input: joint values must be numbers")
+
+    def send_gripper_open(self):
+        # Send a gripper trajectory message with a position (e.g., 0 for open)
+        msg = JointTrajectory()
+        msg.joint_names = ["gripper_joint"]
+        point = JointTrajectoryPoint()
+        point.positions = [100.0]
+        point.time_from_start.sec = 1
+        msg.points = [point]
+        self.gripper_pub.publish(msg)
+
+    def send_gripper_close(self):
+        # Send a gripper trajectory message with a position (e.g., 100 for close)
+        msg = JointTrajectory()
+        msg.joint_names = ["gripper_joint"]
+        point = JointTrajectoryPoint()
+        point.positions = [0.0]
+        point.time_from_start.sec = 1
+        msg.points = [point]
+        self.gripper_pub.publish(msg)
+
+    def set_gripper_value(self):
+        # Set any value based on user input
+        try:
+            val = float(self.gripper_var.get())
+            msg = JointTrajectory()
+            msg.joint_names = ["gripper_joint"]
+            point = JointTrajectoryPoint()
+            point.positions = [val]
+            point.time_from_start.sec = 1
+            msg.points = [point]
+            self.gripper_pub.publish(msg)
+        except ValueError:
+            self.get_logger().warn("Invalid gripper input: must be a number")
 
 
 def main():

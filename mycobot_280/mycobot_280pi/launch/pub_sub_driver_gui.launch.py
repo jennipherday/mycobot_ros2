@@ -5,6 +5,7 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 from launch import LaunchDescription
+from launch.conditions import IfCondition
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import Command, LaunchConfiguration
 
@@ -38,6 +39,12 @@ def generate_launch_description():
     gui_launch_arg = DeclareLaunchArgument(name="gui", default_value="true")
     res.append(gui_launch_arg)
 
+    driver_launch_arg = DeclareLaunchArgument(name="driver", default_value="true")
+    res.append(driver_launch_arg)
+
+    rviz_bool_launch_arg = DeclareLaunchArgument("rviz", default_value="true")
+    res.append(rviz_bool_launch_arg)
+
     robot_description = ParameterValue(
         Command(["xacro ", LaunchConfiguration("model")]), value_type=str
     )
@@ -48,6 +55,7 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         parameters=[{"robot_description": robot_description}],
+        condition=IfCondition(LaunchConfiguration("driver")),
     )
     res.append(robot_state_publisher_node)
 
@@ -58,6 +66,7 @@ def generate_launch_description():
         executable="rviz2",
         output="screen",
         arguments=["-d", LaunchConfiguration("rvizconfig")],
+        condition=IfCondition(LaunchConfiguration("rviz")),
     )
     res.append(rviz_node)
 
@@ -72,19 +81,17 @@ def generate_launch_description():
             {"max_speed": 50},
         ],
         output="screen",
+        condition=IfCondition(LaunchConfiguration("driver")),
     )
     res.append(driver_node)
 
     # GUI (conditionally launched if gui:=true)
-    from launch.conditions import IfCondition
-    from launch.substitutions import LaunchConfiguration as LC
-
     gui_node = Node(
         name="mycobot_gui",
         package="mycobot_280pi",
         executable="publishing_gui",
         output="screen",
-        condition=IfCondition(LC("gui")),
+        condition=IfCondition(LaunchConfiguration("gui")),
     )
     res.append(gui_node)
 

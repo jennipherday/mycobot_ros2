@@ -64,7 +64,7 @@ class MyCobotDriver(Node):
 
     def gripper_callback(self, msg: JointTrajectory):
         if msg.points:
-            gripper_position = msg.points[0].positions[0]
+            gripper_position = int(msg.points[0].positions[0])
             self.mc.set_gripper_value(gripper_position, self._max_speed)
             self.get_logger().info(f"Gripper position sent: {gripper_position}")
 
