@@ -6,7 +6,8 @@ RUN apt-get update \
     python3-pip \
     python3.8-venv \
     ros-${ROS_DISTRO}-rclpy \
-    ros-${ROS_DISTRO}-moveit\
+    ros-${ROS_DISTRO}-moveit \
+    ros-${ROS_DISTRO}-backward-ros \
     build-essential \
     python3-colcon-common-extensions \
     libopencv-dev \
