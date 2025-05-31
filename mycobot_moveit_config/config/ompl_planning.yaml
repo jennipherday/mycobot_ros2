@@ -1,0 +1,17 @@
+planner_configs:
+  RRTConnectkConfigDefault:
+    type: geometric::RRTConnect
+    range: 0.1
+
+  RRTstar:
+    type: geometric::RRTstar
+    range: 0.1
+
+default_planner_config: RRTConnectkConfigDefault
+
+group_configs:
+  mycobot_arm:
+    default_planner_config: RRTConnectkConfigDefault
+    planners:
+      - RRTConnectkConfigDefault
+      - RRTstar

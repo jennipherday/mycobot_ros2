@@ -62,6 +62,7 @@ setup(
             "slider_control = mycobot_280pi.slider_control:main",
             "teleop_keyboard = mycobot_280pi.teleop_keyboard:main",
             "subscriber_driver = mycobot_280pi.subscriber_driver:main",
+            "action_driver = mycobot_280pi.action_driver:main",
             "publishing_gui = mycobot_280pi.publishing_gui:main",
         ],
     },

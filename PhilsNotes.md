@@ -70,13 +70,13 @@ On the RPi:
 
 ```bash
 ros2-init
+export ROS_DOMAIN_ID=1
 ros2 run demo_nodes_cpp talker
 ```
 
 On the dev container:
 
 ```bash
-ros2-init
 ros2 run demo_nodes_cpp listener
 ```
 
@@ -87,3 +87,63 @@ You should see the listener node receiving messages from the talker node. If you
 - `ip addr` on both machines should show interfaces on the 169.254.100.x network.
 - `echo $ROS_DOMAIN_ID` on both machines should be 1.
 - `ip route` on the RPi should show a default route to eth0 at the top: `default dev eth0 scope link`
+
+
+## URDF, SRDF, MoveIt
+
+- The mycobot descriptions and urdf describe the links as "joint1" etc and the joints as "joint2_to_joint1" etc. Not how I would have done it, but I stay consistent with the package.
+- It was a helpful exercise to create the SRDF and MoveIt configuration files from scratch. This was necessary as the moveit wizard does not work with ROS2 Galactic which is what the RPi is running. (Outdated).
+
+## Missing Packages on RPi
+- `ros-galactic-ros2-control`
+- `chrony`
+
+
+## Clock sync
+The RPi will not have a clock sync with the host machine, so you will need to set the clock manually. This can be done using the `date` command from your host machine. You will  need to set up ssh keys to minimize latency.:
+
+```bash
+ssh-keygen -t rsa -b 4096
+ssh-copy-id er@169.254.100.2
+ssh er@169.254.100.2 "sudo date -s @$(date +%s.%3N)"
+```
+
+## Clock sync with chrony
+You can also use `chrony` to keep the clocks in sync. This is a more robust solution, but requires some setup.
+Edit the `/etc/chrony/chrony.conf` on the local machine and add the following lines:
+
+```bash
+allow 169.254.100.2
+```
+Then restart the chrony service:
+
+```bash
+sudo systemctl restart chronyd
+sudo chronyc tracking
+```
+
+and check that its listening
+
+```bash
+sudo chronyc sources
+```
+
+Then on the Raspberry Pi client ( making sure chorony is installed), add the following to `/etc/chrony/chrony.conf`:
+
+```bash
+server 169.254.100.1 iburst prefer
+```
+
+Restart the chrony service on the RPi:
+
+```bash
+sudo systemctl restart chronyd
+chronyc tracking
+chronyc sources
+```
+
+Enable chrony to start on boot on the RPi:
+
+```bash
+sudo systemctl enable chrony
+```
