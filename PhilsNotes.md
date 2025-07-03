@@ -160,7 +160,7 @@ ros2 launch mycobot_280pi simple_gui.launch.py gui:='true' rviz:='false'
 You should see a simple gui in Chinese. Change angle values and hit the button below to move the robot.
 
 ### Pub_Sub_driver GUI for Host machine and RPi
-This will allow you to control the robot from your host machine. You should see another simple GUI (this time in English). Changing the angles of joints or the status of the gripper should be made in Rviz and on the actual robot. *Gripper may not be displayed in Rviz*
+This will allow you to control the robot from your host machine. You should see another simple GUI (this time in English). Changing the angles of joints or the status of the gripper should be made in Rviz and on the actual robot. *Rviz is not currently configured to display the gripper.```
 
 The subscriber will listen for instructions from the publsiher, similar to the talker and listener demo shown earlier.
 
